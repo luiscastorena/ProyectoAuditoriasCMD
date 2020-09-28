@@ -14,7 +14,8 @@ namespace ProyectoAuditoriasCMD
 
     public partial class Form1 : Form
     {
-        public static  int contador = 0;
+        public static List<string> direccionesMAC = new List<string>();
+        public static int contador = 0;
         public Form1()
         {
             InitializeComponent();
@@ -23,68 +24,51 @@ namespace ProyectoAuditoriasCMD
         private void button1_Click(object sender, EventArgs e)
         {
             ExecuteCommand("nmap -sn 192.168.100.98/24");
-            timer1.Start();
+           timer1.Start();
         }
         static void ExecuteCommand(string _Command)
         {
 
-            //Indicamos que deseamos inicializar el proceso cmd.exe junto a un comando de arranque. 
-            //(/C, le indicamos al proceso cmd que deseamos que cuando termine la tarea asignada se cierre el proceso).
-            //Para mas informacion consulte la ayuda de la consola con cmd.exe /? 
-            System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/c " + _Command);
-            // Indicamos que la salida del proceso se redireccione en un Stream
+
+            System.Diagnostics.ProcessStartInfo procStartInfo =
+                new System.Diagnostics.ProcessStartInfo("cmd", "/c " + _Command);
+
             procStartInfo.RedirectStandardOutput = true;
             procStartInfo.UseShellExecute = false;
-            //Indica que el proceso no despliegue una pantalla negra (El proceso se ejecuta en background)
             procStartInfo.CreateNoWindow = false;
-            //Inicializa el proceso
+
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo = procStartInfo;
             proc.Start();
-            //Consigue la salida de la Consola(Stream) y devuelve una cadena de texto
-            string result = proc.StandardOutput.ReadToEnd();
-            //Muestra en pantalla la salida del Comando
-            Resultados(result);
-            contador++;
-        }
 
+            string result;
+            List<string> lxl = new List<string>();
+            result = proc.StandardOutput.ReadLine();
+            while (result != null)
+            {
+                lxl.Add(result);
+                lxl.Add("\n");
+                result = proc.StandardOutput.ReadLine();
+            }
+
+            foreach (string m in lxl)
+            {
+                if (m.StartsWith("MAC"))
+                {
+                    direccionesMAC.Add(m);
+                }
+            }
+            contador++;
+            
+        }
         private void timer1_Tick(object sender, EventArgs e)
         {
             ExecuteCommand("nmap -sn 192.168.100.98/24");
         }
-
         static  void Resultados(string result)
         {
-            int primerTotal = 0;
-            int segundoTotal = 0;
-            int ultimoTotal = 0;
-            primerTotal = Regex.Matches(result, "MAC Address").Count;
-
-            if (contador == 1)
-            {
-                MessageBox.Show("Hay " + primerTotal + " dispositivos conectados");
-            }
-            if(contador == 1)
-            {
-                segundoTotal = Regex.Matches(result, "MAC Address").Count;
-                if (segundoTotal > primerTotal)
-                {
-                    MessageBox.Show("Hay un nuevo dispositivo encontrado");
-                    email();
-                }
-
-            }
-            if(contador > 1)
-            {
-                ultimoTotal = Regex.Matches(result, "MAC Address").Count;
-                if(ultimoTotal > segundoTotal)
-                {
-                    MessageBox.Show("Hay un nuevo dispositivo encontrado");
-                    email();
-                }
-            }
+           
         }
-
         static void email()
         {
             System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage();
@@ -108,6 +92,16 @@ namespace ProyectoAuditoriasCMD
             {
                 MessageBox.Show("Error al enviar");
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
