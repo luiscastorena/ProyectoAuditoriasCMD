@@ -95,7 +95,7 @@ namespace ProyectoAuditoriasCMD
             msg.BodyEncoding = System.Text.Encoding.UTF8;
             msg.From = new System.Net.Mail.MailAddress("luiscastorena.095@gmail.com");
             System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient();
-            cliente.Credentials = new System.Net.NetworkCredential("luiscastorena.095@gmail.com", "rko000rko");
+            cliente.Credentials = new System.Net.NetworkCredential("luiscastorena.095@gmail.com", "Aqui va la contraseña de tu correo");
             cliente.Port = 587;
             cliente.EnableSsl = true;
             cliente.Host = "smtp.gmail.com";
